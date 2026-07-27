@@ -1,0 +1,58 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: market-data-service
+  redis:
+    host: localhost
+    port: 6379
+    timeout: 6000ms
+    lettuce:
+      pool:
+        max-active: 8
+        max-idle: 8
+        min-idle: 0
+        max-wait: -1ms
+
+  webflux:
+    base-path: /market-data
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+
+market-data:
+  cache:
+    ttl: 300  # 5 minutes in seconds
+  use-mock-fallback: true  # Enable mock fallback for local development
+  external-api:
+    alpha-vantage:
+      enabled: true
+      base-url: https://www.alphavantage.co/query
+      api-key: ${ALPHA_VANTAGE_API_KEY:demo}  # Set environment variable or use demo key
+    polygon:
+      enabled: false
+      base-url: https://api.polygon.io
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,redis
+  endpoint:
+    health:
+      show-details: always
+
+jwt:
+  secret: ${JWT_SECRET:change-me-in-production-please-keep-it-long-and-random}
+  expiration: 86400000
+
+logging:
+  level:
+    com.fintech.marketdata: DEBUG

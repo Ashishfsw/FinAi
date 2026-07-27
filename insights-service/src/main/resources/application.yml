@@ -1,0 +1,77 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: insights-service
+  datasource:
+    url: jdbc:postgresql://localhost:5433/insights_db
+    username: fintech
+    password: fintech123
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+  redis:
+    host: localhost
+    port: 6379
+    timeout: 6000ms
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY:sk-demo}
+      chat:
+        options:
+          model: gpt-4o
+          temperature: 0.7
+      embedding:
+        options:
+          model: text-embedding-3-small
+    vectorstore:
+      pgvector:
+        index-type: ivfflat
+        dimension: 1536
+        distance-type: cosine
+        max-neighbor-count: 100
+        create-extension: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+
+insights:
+  agent:
+    max-iterations: 3
+    confidence-threshold: 0.8
+  rag:
+    chunk-size: 1000
+    chunk-overlap: 200
+    top-k: 5
+    similarity-threshold: 0.7
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,ai
+  endpoint:
+    health:
+      show-details: always
+
+jwt:
+  secret: ${JWT_SECRET:change-me-in-production-please-keep-it-long-and-random}
+  expiration: 86400000
+
+logging:
+  level:
+    com.fintech.insights: DEBUG
+    org.springframework.ai: DEBUG
